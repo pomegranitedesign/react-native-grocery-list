@@ -1,22 +1,39 @@
-import React, { Fragment } from 'react'
-import { View, Text, SafeAreaView, ScrollView } from 'react-native'
+import React, { useState } from 'react'
+import { v4 as uuid } from 'uuid'
+import { SafeAreaView, FlatList, KeyboardAvoidingView } from 'react-native'
 import nachos from '../data/nachos'
+import AddItem from '../components/AddItem'
 import ListItem, { Separator } from '../components/LIstItem'
 
-export default () => (
-	<SafeAreaView>
-		<ScrollView>
-			{nachos.map((item, index) => (
-				<Fragment key={item.id}>
+const CurrentList = () => {
+	const [ list, setList ] = useState(nachos)
+	return (
+		<SafeAreaView>
+			<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" />
+			<FlatList
+				data={list}
+				keyExtractor={(item) => item.id}
+				ItemSeparatorComponent={() => <Separator />}
+				ListHeaderComponent={() => (
+					<AddItem
+						onSubmitEditing={({ nativeEvent: { text } }) => {
+							setList([ { id: uuid(), name: text }, ...list ])
+						}}
+					/>
+				)}
+				renderItem={({ item, index }) => (
 					<ListItem
 						name={item.name}
 						isFavourite={index % 2 === 0}
+						onAddedSwipe={() => alert('TODO onAddedSwipe')}
+						onDeleteSwipe={() => alert('TODO onDeleteSwipe')}
 						onFavouritePress={() =>
 							alert('TODO Handle Favourite Press')}
 					/>
-					<Separator />
-				</Fragment>
-			))}
-		</ScrollView>
-	</SafeAreaView>
-)
+				)}
+			/>
+		</SafeAreaView>
+	)
+}
+
+export default CurrentList
